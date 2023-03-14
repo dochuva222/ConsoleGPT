@@ -9,12 +9,13 @@ namespace ConsoleGPT.Services
 {
     public static class CustomConsole
     {
+        
         public static void Write(string text)
         {
             foreach (var symbol in text)
             {
                 Console.Write(symbol);
-                Thread.Sleep(100);
+                Thread.Sleep(50);
             }
             Console.WriteLine();
         }

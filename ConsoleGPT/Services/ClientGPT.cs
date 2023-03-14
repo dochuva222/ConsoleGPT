@@ -1,5 +1,5 @@
 ﻿using ConsoleGPT.Models;
-using ConsoleGPT.Models.FakeGPTModels;
+using ConsoleGPT.Models.ChatGPTAPIModels;
 using Newtonsoft.Json;
 using System;
 using System.CodeDom;
@@ -14,62 +14,30 @@ namespace ConsoleGPT.Services
 {
     public class ClientGPT
     {
-        const string SECRET_WORD = "switch to true chat gpt";
-        const string dataPath = "LearnData\\";
-        private ICollection<DataGPT> _data;
-        private bool _isTrueChatGPT = false;
-
+        private List<ChatMessage> messages;
+        private static string prefix = "тупая машина: ";
         public ClientGPT()
         {
-            _data = GetDataGPT(dataPath);
+            messages = new List<ChatMessage>();
             CustomConsole.Write("Hello i'm console gpt. Ask me about everything and i will try to help you.");
         }
 
-        public ClientGPT(bool switcher)
+        public ClientGPT(string systemMessage) : this()
         {
-            _isTrueChatGPT = switcher;
-
+            messages.Add(new ChatMessage("system", systemMessage));
         }
 
-        private List<DataGPT> GetDataGPT(string path)
+        public async void Ask(string content)
         {
-            var data = new List<DataGPT>();
-            var fileNames = Directory.GetFiles(Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, path)));
-            foreach (var file in fileNames)
+            if (!string.IsNullOrWhiteSpace(content))
             {
-                var dataText = File.ReadAllText(file);
-                var dataGPT = JsonConvert.DeserializeObject<DataGPT>(dataText);
-                data.Add(dataGPT);
+                var chatRequest = new ChatRequest();
+                var chatMessage = new ChatMessage("user", content);
+                messages.Add(chatMessage);
+                chatRequest.Messages.AddRange(messages);
+                var response = await NetManager.PostRequest(chatRequest);
+                CustomConsole.Write(prefix + response["choices"].FirstOrDefault()["message"]["content"].ToString());
             }
-
-            return data;
-        }
-
-        //public void AskGPT(string question)
-        //{
-        //    if (question == SECRET_WORD)
-        //    {
-        //        _isTrueChatGPT = true;
-        //    }
-
-        //    if (!_isTrueChatGPT)
-        //    {
-
-        //    }
-        //    else
-        //    {
-
-        //    }
-        //}
-
-        public async void AskGPT(string question)
-        {
-           //var response = NetManager.Post<>("", )
-        }
-
-        private void AnswerGPT()
-        {
-
         }
     }
 }

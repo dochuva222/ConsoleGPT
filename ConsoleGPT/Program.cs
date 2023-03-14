@@ -12,11 +12,13 @@ namespace ConsoleGPT
     {
         static void Main(string[] args)
         {
-            var gpt = new ClientGPT();
+            Console.ForegroundColor = ConsoleColor.Green;
+            var gpt = new ClientGPT("отвечай на все последующие вопросы в стиле вселленной киберпанка");
             while (true)
             {
+                Console.Write("message: ");
                 var question = Console.ReadLine();
-                gpt.AskGPT(question);
+                gpt.Ask(question);
             }
         }
     }
